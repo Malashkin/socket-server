@@ -7,19 +7,36 @@
   </head>
   <body>
     <h1>Socket Server</h1>
-    <script>
-      const WebSocket = require("ws");
-      const wss = new WebSocket.Server({ port: 8080 });
+   <script>
+        const socket = new WebSocket('wss://sitethree.com:8080');
 
-      wss.on("connection", function connection(ws) {
-        ws.on("message", function incoming(message) {
-          wss.clients.forEach(function each(client) {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
-              client.send(message);
-            }
-          });
-        });
-      });
+        socket.onopen = function(e) {
+          console.log("Подключение установлено");
+        };
+
+        socket.onmessage = function(event) {
+          console.log(`Получено сообщение: ${event.data}`);
+        };
+
+        socket.onclose = function(event) {
+          if (event.wasClean) {
+            console.log(`Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
+          } else {
+            console.log('Соединение прервано');
+          }
+        };
+
+        socket.onerror = function(error) {
+          console.log(`Ошибка ${error.message}`);
+        };
+
+        function sendMessage(message) {
+          if (socket.readyState === WebSocket.OPEN) {
+            socket.send(message);
+          } else {
+            console.log("WebSocket не подключен");
+          }
+        }
     </script>
   </body>
 </html>
